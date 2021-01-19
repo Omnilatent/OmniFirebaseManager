@@ -1,6 +1,9 @@
 {
     "name": "OmniLatent.FirebaseManager",
-    "references": [],
+    "references": [
+        "Firebase.Analytics",
+        "Firebase.Crashlytics"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
