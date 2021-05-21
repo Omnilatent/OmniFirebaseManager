@@ -117,6 +117,7 @@ public class FirebaseManager : MonoBehaviour
     public static void LogEvent(string name, string paramName, int value)
     {
         CheckEventNameValid(name);
+        LogConsole(name, paramName, value);
         if (!FirebaseManager.CheckInit()) return;
         FirebaseAnalytics.LogEvent(name, paramName, value);
     }
@@ -124,6 +125,7 @@ public class FirebaseManager : MonoBehaviour
     public static void LogEvent(string name, string paramName, double value)
     {
         CheckEventNameValid(name);
+        LogConsole(name, paramName, value);
         if (!FirebaseManager.CheckInit()) return;
         FirebaseAnalytics.LogEvent(name, paramName, value);
     }
@@ -131,6 +133,7 @@ public class FirebaseManager : MonoBehaviour
     public static void LogEvent(string name, string paramName, string value)
     {
         CheckEventNameValid(name);
+        LogConsole(name, paramName, value);
         if (!FirebaseManager.CheckInit())
         {
             print("Firebase not ready");
@@ -142,6 +145,7 @@ public class FirebaseManager : MonoBehaviour
     public static void LogEvent(string name)
     {
         CheckEventNameValid(name);
+        LogConsole(name);
         if (!FirebaseManager.CheckInit())
         {
             print("Firebase not ready");
@@ -151,9 +155,6 @@ public class FirebaseManager : MonoBehaviour
         FirebaseAnalytics.LogEvent(DebugPrefix + name);
 #else
         FirebaseAnalytics.LogEvent(name);
-#endif
-#if UNITY_EDITOR
-        Debug.Log("<color=yellow>firebase log:</color> " + name);
 #endif
     }
     public static void LogEvent(string name, Firebase.Analytics.Parameter[] array)
@@ -197,5 +198,12 @@ public class FirebaseManager : MonoBehaviour
             return false;
         }
         return true;
+    }
+
+    static void LogConsole(string name, string paramName = "", object value = null)
+    {
+#if UNITY_EDITOR
+        Debug.Log($"<color=yellow>firebase log:</color> {name}, {paramName}, {value}");
+#endif
     }
 }
