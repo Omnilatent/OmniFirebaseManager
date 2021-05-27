@@ -1,7 +1,11 @@
 {
-    "name": "OmniLatent.FirebaseManager",
-    "references": [],
-    "includePlatforms": [],
+    "name": "Omnilatent.Firebase.Editor",
+    "references": [
+        "GUID:0c7d005e9daee4d46a29c18d1cf468e5"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
