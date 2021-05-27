@@ -116,18 +116,24 @@ public class FirebaseManager : MonoBehaviour
 
     public static void LogEvent(string name, string paramName, int value)
     {
+        CheckEventNameValid(name);
+        LogConsole(name, paramName, value);
         if (!FirebaseManager.CheckInit()) return;
         FirebaseAnalytics.LogEvent(name, paramName, value);
     }
 
     public static void LogEvent(string name, string paramName, double value)
     {
+        CheckEventNameValid(name);
+        LogConsole(name, paramName, value);
         if (!FirebaseManager.CheckInit()) return;
         FirebaseAnalytics.LogEvent(name, paramName, value);
     }
 
     public static void LogEvent(string name, string paramName, string value)
     {
+        CheckEventNameValid(name);
+        LogConsole(name, paramName, value);
         if (!FirebaseManager.CheckInit())
         {
             print("Firebase not ready");
@@ -138,6 +144,8 @@ public class FirebaseManager : MonoBehaviour
 
     public static void LogEvent(string name)
     {
+        CheckEventNameValid(name);
+        LogConsole(name);
         if (!FirebaseManager.CheckInit())
         {
             print("Firebase not ready");
@@ -148,12 +156,10 @@ public class FirebaseManager : MonoBehaviour
 #else
         FirebaseAnalytics.LogEvent(name);
 #endif
-#if UNITY_EDITOR
-        Debug.Log("<color=yellow>firebase log:</color> " + name);
-#endif
     }
     public static void LogEvent(string name, Firebase.Analytics.Parameter[] array)
     {
+        CheckEventNameValid(name);
         if (!FirebaseManager.CheckInit())
         {
             print("Firebase not ready");
@@ -182,5 +188,22 @@ public class FirebaseManager : MonoBehaviour
     {
         if (firebaseReady.HasValue) callback(null, FirebaseReady);
         else handleOnReady += callback;
+    }
+
+    static bool CheckEventNameValid(string input)
+    {
+        if (input.Length > 40)
+        {
+            Debug.LogError($"Event name is longer than 40 characters: {input}");
+            return false;
+        }
+        return true;
+    }
+
+    static void LogConsole(string name, string paramName = "", object value = null)
+    {
+#if UNITY_EDITOR
+        Debug.Log($"<color=yellow>firebase log:</color> {name}, {paramName}, {value}");
+#endif
     }
 }
