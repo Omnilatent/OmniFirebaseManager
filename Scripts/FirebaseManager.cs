@@ -4,6 +4,7 @@ using UnityEngine;
 using Firebase.Analytics;
 using Firebase.Crashlytics;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 /* CHANGELOG:
  * v1.1.0: 5/5: change CheckDependenciesAsync function to async to work with remote config manager
@@ -23,6 +24,16 @@ public class FirebaseManager : MonoBehaviour
 
     public static System.EventHandler<bool> handleOnReady;
     const string DebugPrefix = "Debug_";
+
+    static Regex _regexValidName = null;
+    static Regex RegexValidName
+    {
+        get
+        {
+            if (_regexValidName == null) _regexValidName = new Regex(@"^[a-zA-Z]\w+$");
+            return _regexValidName;
+        }
+    }
 
     private void Awake()
     {
@@ -116,7 +127,7 @@ public class FirebaseManager : MonoBehaviour
 
     public static void LogEvent(string name, string paramName, int value)
     {
-        CheckEventNameValid(name);
+        CheckEventNameValid(name, paramName);
         LogConsole(name, paramName, value);
         if (!FirebaseManager.CheckInit()) return;
         FirebaseAnalytics.LogEvent(name, paramName, value);
@@ -124,7 +135,7 @@ public class FirebaseManager : MonoBehaviour
 
     public static void LogEvent(string name, string paramName, double value)
     {
-        CheckEventNameValid(name);
+        CheckEventNameValid(name, paramName);
         LogConsole(name, paramName, value);
         if (!FirebaseManager.CheckInit()) return;
         FirebaseAnalytics.LogEvent(name, paramName, value);
@@ -190,14 +201,27 @@ public class FirebaseManager : MonoBehaviour
         else handleOnReady += callback;
     }
 
-    static bool CheckEventNameValid(string input)
+    static bool CheckEventNameValid(string eventName, string paramName = "")
     {
-        if (input.Length > 40)
+        bool isDebugging = Debug.isDebugBuild;
+        bool isValid = true;
+#if UNITY_EDITOR
+        isDebugging = true;
+#endif
+        if (isDebugging)
         {
-            Debug.LogError($"Event name is longer than 40 characters: {input}");
-            return false;
+            if (eventName.Length > 40 || paramName.Length > 40)
+            {
+                Debug.LogError($"Event name or parameter is longer than 40 characters: {eventName}, {paramName}");
+                isValid = false;
+            }
+            if (!RegexValidName.Match(eventName).Success || (!string.IsNullOrEmpty(paramName) && !RegexValidName.Match(paramName).Success))
+            {
+                Debug.LogError($"Event name or parameter contains invalid characters: {eventName}, {paramName}");
+                isValid = false;
+            }
         }
-        return true;
+        return isValid;
     }
 
     static void LogConsole(string name, string paramName = "", object value = null)
