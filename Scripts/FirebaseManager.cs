@@ -25,16 +25,6 @@ public class FirebaseManager : MonoBehaviour
     public static System.EventHandler<bool> handleOnReady;
     const string DebugPrefix = "Debug_";
 
-    static Regex _regexValidName = null;
-    static Regex RegexValidName
-    {
-        get
-        {
-            if (_regexValidName == null) _regexValidName = new Regex(@"^[a-zA-Z]\w+$");
-            return _regexValidName;
-        }
-    }
-
     private void Awake()
     {
         if (instance != null)
@@ -210,12 +200,13 @@ public class FirebaseManager : MonoBehaviour
 #endif
         if (isDebugging)
         {
+            string regexPattern = @"^[a-zA-Z]\w+$";
             if (eventName.Length > 40 || paramName.Length > 40)
             {
                 Debug.LogError($"Event name or parameter is longer than 40 characters: {eventName}, {paramName}");
                 isValid = false;
             }
-            if (!RegexValidName.Match(eventName).Success || (!string.IsNullOrEmpty(paramName) && !RegexValidName.Match(paramName).Success))
+            if (!Regex.Match(eventName, regexPattern).Success || (!string.IsNullOrEmpty(paramName) && !Regex.Match(paramName, regexPattern).Success))
             {
                 Debug.LogError($"Event name or parameter contains invalid characters: {eventName}, {paramName}");
                 isValid = false;
