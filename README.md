@@ -1,4 +1,11 @@
-SETUP:
+## Dependencies
+
+- Firebase Analytic 7.2.0
+- Firebase Remote Config 7.2.0
+- Firebase Messaging 7.2.0 (if you use Cloud Message)
+
+## SETUP:
+
 Install required Firebase component through Package Manager.
 Add a gameobject to Main scene with the following components:
 - FirebaseManager
@@ -15,5 +22,6 @@ with callback as the function to call when Firebase has completed setup
 Use FirebaseRemoteConfigHelper.CheckAndHandleFetchConfig(System.EventHandler<bool> callback)
 with callback as the function to call when Firebase Remote has completed setup
 
-USAGE:
+## USAGE:
+    
 Call FirebaseManager.LogEvent to log events.
