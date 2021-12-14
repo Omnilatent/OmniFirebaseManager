@@ -111,8 +111,9 @@ public class FirebaseManager : MonoBehaviour
 #if DEBUG_EVENT
         FirebaseAnalytics.SetCurrentScreen(DebugPrefix + screenName, screenClass);
 #else
-        FirebaseAnalytics.SetCurrentScreen(screenName, screenClass);
+        FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventScreenView, new Firebase.Analytics.Parameter(FirebaseAnalytics.ParameterScreenName, screenName));
 #endif
+        LogConsole(FirebaseAnalytics.EventScreenView, FirebaseAnalytics.ParameterScreenName, screenName);
     }
 
     public static void LogEvent(string name, string paramName, int value)
