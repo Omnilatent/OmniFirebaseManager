@@ -108,11 +108,10 @@ public class FirebaseManager : MonoBehaviour
             print("Firebase not ready");
             return;
         }
-#if DEBUG_EVENT
-        FirebaseAnalytics.SetCurrentScreen(DebugPrefix + screenName, screenClass);
-#else
-        FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventScreenView, new Firebase.Analytics.Parameter(FirebaseAnalytics.ParameterScreenName, screenName));
-#endif
+        FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventScreenView,
+            new Firebase.Analytics.Parameter(FirebaseAnalytics.ParameterScreenName, screenName),
+            new Firebase.Analytics.Parameter(FirebaseAnalytics.ParameterScreenClass, screenClass)
+        );
         LogConsole(FirebaseAnalytics.EventScreenView, FirebaseAnalytics.ParameterScreenName, screenName);
     }
 
