@@ -203,12 +203,16 @@ public class FirebaseManager : MonoBehaviour
             string regexPattern = @"^[a-zA-Z]\w+$";
             if (eventName.Length > 40 || paramName.Length > 40)
             {
-                Debug.LogError($"Event name or parameter is longer than 40 characters: {eventName}, {paramName}");
+                var e = new System.ArgumentException($"Event '{eventName}' with param '{paramName}' exceeds 40 characters");
+                Debug.LogException(e);
+                FirebaseManager.LogException(e);
                 isValid = false;
             }
             if (!Regex.Match(eventName, regexPattern).Success || (!string.IsNullOrEmpty(paramName) && !Regex.Match(paramName, regexPattern).Success))
             {
-                Debug.LogError($"Event name or parameter contains invalid characters: {eventName}, {paramName}");
+                var e = new System.ArgumentException($"Event '{eventName}' with param '{paramName}' contains invalid characters");
+                Debug.LogException(e);
+                FirebaseManager.LogException(e);
                 isValid = false;
             }
         }
