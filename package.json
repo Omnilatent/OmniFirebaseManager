@@ -1,7 +1,7 @@
 {
     "name": "com.omnilatent.firebasemanager",
     "displayName": "Omni Firebase Manager",
-    "version": "1.1.2",
+    "version": "1.2.0",
     "unity": "2018.1",
     "description": "Wrapper for Firebase. \n\nTo find out more, click the \"View Documentation\" link.",
     "keywords": ["firebase"],

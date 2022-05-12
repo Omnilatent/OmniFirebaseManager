@@ -1,5 +1,11 @@
 CHANGELOG:
 ===
+1.2.0
+Changes:
+- Update Log screen view code to be compatible with Firebase 8.6.2.
+Now require Firebase 8.6.2.
+
+===
 1.1.2
 New features:
 - Log most event to console to include check param and value logged.

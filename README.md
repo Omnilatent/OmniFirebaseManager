@@ -1,8 +1,8 @@
 ## Dependencies
 
-- Firebase Analytic 7.2.0
-- Firebase Remote Config 7.2.0
-- Firebase Messaging 7.2.0 (if you use Cloud Message)
+- Firebase Analytic 8.6.2
+- Firebase Remote Config 8.6.2
+- Firebase Messaging 8.6.2 (if you use Cloud Message)
 
 ## SETUP:
 
