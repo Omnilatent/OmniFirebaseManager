@@ -63,9 +63,10 @@ public class FirebaseManager : MonoBehaviour
 
     public static void LogCrashlytics(string message) { if (CheckInit()) Crashlytics.Log(message); }
 
-    public static void LogException(System.Exception exception)
+    public static void LogException(System.Exception exception, bool logToConsole = true)
     {
         if (CheckInit()) { Crashlytics.LogException(exception); }
+        if (logToConsole) Debug.LogException(exception);
     }
 
     public static void CheckGooglePlayService()
