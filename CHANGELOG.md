@@ -1,4 +1,11 @@
 CHANGELOG:
+# 1.3.0
+News:
+- Scripting define symbol "OMNILATENT_FIREBASE_MANAGER" will automatically be added to project.
+
+Change:
+- Moved Firebase Remote Config Helper class from Omni Ads Manager to Omni Firebase Manager package.
+
 # 1.2.2
 Change:
 - When manually logging exception, add option to log it to console as well
