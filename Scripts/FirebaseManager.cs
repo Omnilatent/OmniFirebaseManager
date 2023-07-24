@@ -26,7 +26,6 @@ public class FirebaseManager : MonoBehaviour
 
             return _instance;
         }
-        protected set => _instance = value;
     }
 
     private static FirebaseManager _instance;
@@ -45,13 +44,13 @@ public class FirebaseManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance != null)
+        if (_instance != null)
         {
             Destroy(gameObject);
         }
         else
         {
-            instance = this;
+            _instance = this;
             DontDestroyOnLoad(this.gameObject);
 
             CheckGooglePlayService();
