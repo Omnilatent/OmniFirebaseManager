@@ -22,7 +22,7 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
     }
 
     [Tooltip("If true, store config data to PlayerPref on fetch success")]
-    private CacheSetting _cacheSetting = CacheSetting.No;
+    [SerializeField] CacheSetting _cacheConfig = CacheSetting.No;
 
     public static FirebaseRemoteConfigHelper instance;
     private void Awake()
@@ -86,7 +86,7 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
             setting.MinimumFetchInternalInMilliseconds = 2000;
         }
 
-        if (_cacheSetting == CacheSetting.Yes)
+        if (_cacheConfig == CacheSetting.Yes)
         {
             onFetchComplete += CacheRemoteConfig.OnFetchRemoteConfig;
         }
@@ -99,7 +99,7 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
         {
             return (int)GetConfig(key).LongValue;
         }
-        else if (instance._cacheSetting == CacheSetting.Yes)
+        else if (instance._cacheConfig == CacheSetting.Yes)
         {
             var cacheConfigValue = CacheRemoteConfig.GetConfig(key);
             if (cacheConfigValue != null) return (int)cacheConfigValue.LongValue;
@@ -120,7 +120,7 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
         {
             return (float)GetConfig(key).DoubleValue;
         }
-        else if (instance._cacheSetting == CacheSetting.Yes)
+        else if (instance._cacheConfig == CacheSetting.Yes)
         {
             var cacheConfigValue = CacheRemoteConfig.GetConfig(key);
             if (cacheConfigValue != null) return (float)cacheConfigValue.DoubleValue;
@@ -139,7 +139,7 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
         {
             return GetConfig(key).BooleanValue;
         }
-        else if (instance._cacheSetting == CacheSetting.Yes)
+        else if (instance._cacheConfig == CacheSetting.Yes)
         {
             var cacheConfigValue = CacheRemoteConfig.GetConfig(key);
             if (cacheConfigValue != null) return cacheConfigValue.BooleanValue;
@@ -154,7 +154,7 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
         {
             return GetConfig(key).StringValue;
         }
-        else if (instance._cacheSetting == CacheSetting.Yes)
+        else if (instance._cacheConfig == CacheSetting.Yes)
         {
             var cacheConfigValue = CacheRemoteConfig.GetConfig(key);
             if (cacheConfigValue != null) return cacheConfigValue.StringValue;

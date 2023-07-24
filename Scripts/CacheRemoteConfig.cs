@@ -35,6 +35,18 @@ namespace Omnilatent.FirebaseManagerNS
                 data.Init();
             }
 
+            if (data.configData.Count == 0)
+            {
+                DefaultConfigValue defaultConfigValue = Resources.Load<DefaultConfigValue>("DefaultConfigValue");
+                if (defaultConfigValue != null)
+                {
+                    for (int i = 0; i < defaultConfigValue.configValues.Count; i++)
+                    {
+                        data.configData.Add(defaultConfigValue.configValues[i].Key, defaultConfigValue.configValues[i]);
+                    }
+                }
+            }
+
             // FirebaseRemoteConfigHelper.CheckAndHandleFetchConfig(OnFetchRemoteConfig);
         }
 
@@ -108,8 +120,10 @@ namespace Omnilatent.FirebaseManagerNS
         public void Init() { }
     }
 
+    [Serializable]
     public class CacheConfigValue
     {
+        public string Key;
         public string Data;
 
         public CacheConfigValue(string data) { Data = data; }
