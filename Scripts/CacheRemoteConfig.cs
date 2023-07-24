@@ -61,16 +61,13 @@ namespace Omnilatent.FirebaseManagerNS
                 }
                 else data.configData.Clear();
 
-                string log = "Config from firebase :\n";
-
                 foreach (var config in FirebaseRemoteConfigHelper.GetFirebaseInstance().AllValues)
                 {
                     string value = config.Value.StringValue;
                     data.configData.Add(config.Key, new CacheConfigValue(config.Key, value));
-                    log += $"{config.Key} : {config.Value}\n";
+                    // log += $"{config.Key} : {config.Value}\n";
                 }
 
-                Debug.Log(log);
                 Save();
             }
         }
