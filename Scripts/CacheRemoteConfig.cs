@@ -66,7 +66,7 @@ namespace Omnilatent.FirebaseManagerNS
                 foreach (var config in FirebaseRemoteConfigHelper.GetFirebaseInstance().AllValues)
                 {
                     string value = config.Value.StringValue;
-                    data.configData.Add(config.Key, new CacheConfigValue(value));
+                    data.configData.Add(config.Key, new CacheConfigValue(config.Key, value));
                     log += $"{config.Key} : {config.Value}\n";
                 }
 
@@ -88,7 +88,7 @@ namespace Omnilatent.FirebaseManagerNS
             return null;
         }
 
-        public static string GetConfig(string key, string defaultValue)
+        /*public static string GetConfig(string key, string defaultValue)
         {
             if (data.configData.TryGetValue(key, out var result)) { return result.StringValue; }
             else { return defaultValue; }
@@ -110,7 +110,7 @@ namespace Omnilatent.FirebaseManagerNS
         {
             if (data.configData.TryGetValue(key, out var result)) { return result.DoubleValue; }
             else { return defaultValue; }
-        }
+        }*/
     }
 
     public class CacheRemoteConfigData
@@ -126,28 +126,26 @@ namespace Omnilatent.FirebaseManagerNS
         public string Key;
         public string Data;
 
-        public CacheConfigValue(string data) { Data = data; }
-
-        public string StringValue
+        public CacheConfigValue(string key, string data)
         {
-            get { return Data; }
+            Key = key;
+            Data = data;
         }
 
-        public double DoubleValue => Convert.ToDouble(this.StringValue, (IFormatProvider)CultureInfo.InvariantCulture);
+        public string StringValue() { return Data; }
 
-        public long LongValue => Convert.ToInt64(this.StringValue, (IFormatProvider)CultureInfo.InvariantCulture);
+        public double DoubleValue() => Convert.ToDouble(this.StringValue(), (IFormatProvider)CultureInfo.InvariantCulture);
 
-        public bool BooleanValue
+        public long LongValue() => Convert.ToInt64(this.StringValue(), (IFormatProvider)CultureInfo.InvariantCulture);
+
+        public bool BooleanValue()
         {
-            get
-            {
-                string stringValue = this.StringValue;
-                if (string.Equals(stringValue, "true"))
-                    return true;
-                if (string.Equals(stringValue, "false"))
-                    return false;
-                throw new FormatException(string.Format("ConfigValue '{0}' is not a boolean value", (object)stringValue));
-            }
+            string stringValue = this.StringValue();
+            if (string.Equals(stringValue, "true"))
+                return true;
+            if (string.Equals(stringValue, "false"))
+                return false;
+            throw new FormatException(string.Format("ConfigValue '{0}' is not a boolean value", (object)stringValue));
         }
     }
 }

@@ -102,7 +102,7 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
         else if (instance._cacheConfig == CacheSetting.Yes)
         {
             var cacheConfigValue = CacheRemoteConfig.GetConfig(key);
-            if (cacheConfigValue != null) return (int)cacheConfigValue.LongValue;
+            if (cacheConfigValue != null) return (int)cacheConfigValue.LongValue();
         }
         return defaultValue;
         
@@ -123,7 +123,7 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
         else if (instance._cacheConfig == CacheSetting.Yes)
         {
             var cacheConfigValue = CacheRemoteConfig.GetConfig(key);
-            if (cacheConfigValue != null) return (float)cacheConfigValue.DoubleValue;
+            if (cacheConfigValue != null) return (float)cacheConfigValue.DoubleValue();
         }
         return defaultValue;
         
@@ -142,7 +142,7 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
         else if (instance._cacheConfig == CacheSetting.Yes)
         {
             var cacheConfigValue = CacheRemoteConfig.GetConfig(key);
-            if (cacheConfigValue != null) return cacheConfigValue.BooleanValue;
+            if (cacheConfigValue != null) return cacheConfigValue.BooleanValue();
         }
         return defaultValue;
         // return HasInitialized() ? GetConfig(key).BooleanValue : defaultValue;
@@ -157,7 +157,7 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
         else if (instance._cacheConfig == CacheSetting.Yes)
         {
             var cacheConfigValue = CacheRemoteConfig.GetConfig(key);
-            if (cacheConfigValue != null) return cacheConfigValue.StringValue;
+            if (cacheConfigValue != null) return cacheConfigValue.StringValue();
         }
         return defaultValue;
         // return HasInitialized() ? GetConfig(key).StringValue : defaultValue;
