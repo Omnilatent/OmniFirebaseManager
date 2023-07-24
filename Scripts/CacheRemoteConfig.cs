@@ -129,6 +129,8 @@ namespace Omnilatent.FirebaseManagerNS
             Data = data;
         }
 
+        public CacheConfigValue() { }
+
         public string StringValue() { return Data; }
 
         public double DoubleValue() => Convert.ToDouble(this.StringValue(), (IFormatProvider)CultureInfo.InvariantCulture);
