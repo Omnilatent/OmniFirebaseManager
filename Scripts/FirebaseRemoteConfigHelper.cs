@@ -62,7 +62,7 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
             te.text = id;
             te.SelectAll();
             te.Copy();
-            //Manager.Add(PopupController.POPUP_SCENE_NAME, new PopupData(PopupType.OK, System.String.Format("Instance ID Token {0}", id)));
+            Debug.Log(System.String.Format("Firebase Installation ID: {0}", id));
         }
         if (FirebaseManager.FirebaseReady)
         {
@@ -74,7 +74,6 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
         if (Debug.isDebugBuild)
         {
             var setting = FirebaseRemoteConfig.DefaultInstance.ConfigSettings;
-            //setting.IsDeveloperMode = true; //deprecated in Firebase 8.6.2
             setting.MinimumFetchInternalInMilliseconds = 2000;
         }
 
@@ -120,17 +119,6 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
         string result = null;
         if (FirebaseManager.FirebaseReady)
         {
-            //Firebase.InstanceId.FirebaseInstanceId.GetInstanceId(FirebaseManager.app);
-            /*await Firebase.Installations.FirebaseInstallations.DefaultInstance.GetIdAsync().ContinueWith(
-                task =>
-                {
-                    if (!(task.IsCanceled || task.IsFaulted) && task.IsCompleted)
-                    {
-                        UnityEngine.Debug.Log(System.String.Format("Instance ID Token {0}", task.Result));
-                        result = task.Result;
-                    }
-                });*/
-
             await Firebase.Installations.FirebaseInstallations.DefaultInstance.GetTokenAsync(false).ContinueWith(
                 task =>
                 {
@@ -140,16 +128,6 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
                         firebaseInstanceId = result = task.Result;
                     }
                 });
-
-            /*await Firebase.InstanceId.FirebaseInstanceId.DefaultInstance.GetTokenAsync().ContinueWith(
-            task =>
-            {
-                if (!(task.IsCanceled || task.IsFaulted) && task.IsCompleted)
-                {
-                    UnityEngine.Debug.Log(System.String.Format("Instance ID Token {0}", task.Result));
-                    result = task.Result;
-                }
-            });*/
         }
         return result;
     }
@@ -224,8 +202,6 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
             }
             FetchComplete(null);
         }
-        /*System.Threading.Tasks.Task fetchTask = Firebase.RemoteConfig.FirebaseRemoteConfig.DefaultInstance.FetchAndActivateAsync();
-        return fetchTask.ContinueWithOnMainThread(FetchComplete);*/
     }
 
     void SetDefaultValues()
