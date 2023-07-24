@@ -8,48 +8,18 @@ using UnityEngine;
 
 namespace Omnilatent.FirebaseManagerNS
 {
-    public class CacheRemoteConfigData
-    {
-        public Dictionary<string, CacheConfigValue> configData = new Dictionary<string, CacheConfigValue>();
-
-        public void Init() { }
-    }
-
-    public class CacheConfigValue
-    {
-        public string Data;
-
-        public CacheConfigValue(string data) { Data = data; }
-
-        public string StringValue
-        {
-            get { return Data; }
-        }
-
-        public double DoubleValue => Convert.ToDouble(this.StringValue, (IFormatProvider)CultureInfo.InvariantCulture);
-
-        public long LongValue => Convert.ToInt64(this.StringValue, (IFormatProvider)CultureInfo.InvariantCulture);
-
-        public bool BooleanValue
-        {
-            get
-            {
-                string stringValue = this.StringValue;
-                if (string.Equals(stringValue, "true"))
-                    return true;
-                if (string.Equals(stringValue, "false"))
-                    return false;
-                throw new FormatException(string.Format("ConfigValue '{0}' is not a boolean value", (object)stringValue));
-            }
-        }
-    }
-
+    /// <summary>
+    /// After Firebase init success, Firebase Remote Config's value will be used, otherwise the cached values will be used. 
+    /// On Firebase initialization, update the cache values using Firebase Remote Config's values.
+    /// </summary>
     public static class CacheRemoteConfig
     {
         public static CacheRemoteConfigData data;
         public const string PREF_KEY = "REMOTE_CONFIG_CACHE";
 
         static CacheRemoteConfig() { Load(); }
+
+        public static void Initialize() { } //for calling constructor
 
         public static void Load()
         {
@@ -65,24 +35,32 @@ namespace Omnilatent.FirebaseManagerNS
                 data.Init();
             }
 
-            FirebaseRemoteConfigHelper.CheckAndHandleFetchConfig((sender, success) =>
+            // FirebaseRemoteConfigHelper.CheckAndHandleFetchConfig(OnFetchRemoteConfig);
+        }
+
+        public static void OnFetchRemoteConfig(object sender, bool success)
+        {
+            if (success)
             {
-                if (success)
+                if (data == null)
                 {
-                    data.configData.Clear();
-                    string log = "Config from firebase :\n";
-
-                    foreach(var config in FirebaseRemoteConfigHelper.GetFirebaseInstance().AllValues)
-                    {
-                        string value = config.Value.StringValue;
-                        data.configData.Add(config.Key, new CacheConfigValue(value));
-                        log += $"{config.Key} : {config.Value}\n";
-                    }
-
-                    Debug.Log(log);
-                    Save();
+                    data = new CacheRemoteConfigData();
+                    data.Init();
                 }
-            });
+                else data.configData.Clear();
+
+                string log = "Config from firebase :\n";
+
+                foreach (var config in FirebaseRemoteConfigHelper.GetFirebaseInstance().AllValues)
+                {
+                    string value = config.Value.StringValue;
+                    data.configData.Add(config.Key, new CacheConfigValue(value));
+                    log += $"{config.Key} : {config.Value}\n";
+                }
+
+                Debug.Log(log);
+                Save();
+            }
         }
 
         public static void Save()
@@ -120,6 +98,42 @@ namespace Omnilatent.FirebaseManagerNS
         {
             if (data.configData.TryGetValue(key, out var result)) { return result.DoubleValue; }
             else { return defaultValue; }
+        }
+    }
+
+    public class CacheRemoteConfigData
+    {
+        public Dictionary<string, CacheConfigValue> configData = new Dictionary<string, CacheConfigValue>();
+
+        public void Init() { }
+    }
+
+    public class CacheConfigValue
+    {
+        public string Data;
+
+        public CacheConfigValue(string data) { Data = data; }
+
+        public string StringValue
+        {
+            get { return Data; }
+        }
+
+        public double DoubleValue => Convert.ToDouble(this.StringValue, (IFormatProvider)CultureInfo.InvariantCulture);
+
+        public long LongValue => Convert.ToInt64(this.StringValue, (IFormatProvider)CultureInfo.InvariantCulture);
+
+        public bool BooleanValue
+        {
+            get
+            {
+                string stringValue = this.StringValue;
+                if (string.Equals(stringValue, "true"))
+                    return true;
+                if (string.Equals(stringValue, "false"))
+                    return false;
+                throw new FormatException(string.Format("ConfigValue '{0}' is not a boolean value", (object)stringValue));
+            }
         }
     }
 }

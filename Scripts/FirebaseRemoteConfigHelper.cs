@@ -86,6 +86,10 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
             setting.MinimumFetchInternalInMilliseconds = 2000;
         }
 
+        if (_cacheSetting == CacheSetting.Yes)
+        {
+            onFetchComplete += CacheRemoteConfig.OnFetchRemoteConfig;
+        }
         FetchData();
     }
 
