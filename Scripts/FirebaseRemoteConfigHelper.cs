@@ -11,7 +11,6 @@ using Firebase.Extensions;
 
 public class FirebaseRemoteConfigHelper : MonoBehaviour
 {
-#if !DISABLE_FIREBASE
     public static System.EventHandler<bool> onFetchComplete;
     string firebaseInstanceId;
 
@@ -227,5 +226,4 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
     {
         return FirebaseRemoteConfig.DefaultInstance;
     }
-#endif
 }
