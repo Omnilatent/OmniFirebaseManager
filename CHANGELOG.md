@@ -1,4 +1,14 @@
 CHANGELOG:
+# 1.4.0
+
+Dependency changed: LitJson (new).
+
+New features:
+- Cache remote config data as JSON to PlayerPref.
+- Add default config as scriptable object.
+- Make new extra package that include Firebase manager prefab, Default config files, Firebase cloud messaging helper.
+- Accessing Firebase manager instance will automatically instantiate an instance using Resouces.Load.
+
 # 1.3.0
 News:
 - Scripting define symbol "OMNILATENT_FIREBASE_MANAGER" will automatically be added to project.
