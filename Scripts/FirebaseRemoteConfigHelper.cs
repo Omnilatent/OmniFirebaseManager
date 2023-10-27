@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using System;
+using Omnilatent.FirebaseManagerNS;
 
 #if !DISABLE_FIREBASE
 using Firebase.RemoteConfig;
@@ -13,6 +14,15 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
 {
     public static System.EventHandler<bool> onFetchComplete;
     string firebaseInstanceId;
+
+    public enum CacheSetting
+    {
+        No = 0,
+        Yes = 1
+    }
+
+    [Tooltip("If true, store config data to PlayerPref on fetch success")]
+    [SerializeField] CacheSetting _cacheConfig = CacheSetting.No;
 
     public static FirebaseRemoteConfigHelper instance;
     private void Awake()
@@ -76,35 +86,81 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
             setting.MinimumFetchInternalInMilliseconds = 2000;
         }
 
+        if (_cacheConfig == CacheSetting.Yes)
+        {
+            onFetchComplete += CacheRemoteConfig.OnFetchRemoteConfig;
+        }
         FetchData();
     }
 
     public static int GetInt(string key, int defaultValue = 0)
     {
+        if (HasInitialized())
+        {
+            return (int)GetConfig(key).LongValue;
+        }
+        else if (instance._cacheConfig == CacheSetting.Yes)
+        {
+            var cacheConfigValue = CacheRemoteConfig.GetConfig(key);
+            if (cacheConfigValue != null) return (int)cacheConfigValue.LongValue();
+        }
+        return defaultValue;
+        
         //FetchData();
         //if (!HasInitialized()) Debug.Log("Firebase Remote: init not success");
-        ConfigValue config = GetConfig(key);
+        /*ConfigValue config = GetConfig(key);
         if (HasInitialized() && !string.IsNullOrEmpty(config.StringValue))
             return (int)config.DoubleValue;
-        else return defaultValue;
+        else return defaultValue;*/
     }
 
     public static float GetFloat(string key, float defaultValue = 0)
     {
-        ConfigValue config = GetConfig(key);
+        if (HasInitialized())
+        {
+            return (float)GetConfig(key).DoubleValue;
+        }
+        else if (instance._cacheConfig == CacheSetting.Yes)
+        {
+            var cacheConfigValue = CacheRemoteConfig.GetConfig(key);
+            if (cacheConfigValue != null) return (float)cacheConfigValue.DoubleValue();
+        }
+        return defaultValue;
+        
+        /*ConfigValue config = GetConfig(key);
         if (HasInitialized() && !string.IsNullOrEmpty(config.StringValue))
             return (float)config.DoubleValue;
-        else return defaultValue;
+        else return defaultValue;*/
     }
 
     public static bool GetBool(string key, bool defaultValue)
     {
-        return HasInitialized() ? GetConfig(key).BooleanValue : defaultValue;
+        if (HasInitialized())
+        {
+            return GetConfig(key).BooleanValue;
+        }
+        else if (instance._cacheConfig == CacheSetting.Yes)
+        {
+            var cacheConfigValue = CacheRemoteConfig.GetConfig(key);
+            if (cacheConfigValue != null) return cacheConfigValue.BooleanValue();
+        }
+        return defaultValue;
+        // return HasInitialized() ? GetConfig(key).BooleanValue : defaultValue;
     }
 
     public static string GetString(string key, string defaultValue)
     {
-        return HasInitialized() ? GetConfig(key).StringValue : defaultValue;
+        if (HasInitialized())
+        {
+            return GetConfig(key).StringValue;
+        }
+        else if (instance._cacheConfig == CacheSetting.Yes)
+        {
+            var cacheConfigValue = CacheRemoteConfig.GetConfig(key);
+            if (cacheConfigValue != null) return cacheConfigValue.StringValue();
+        }
+        return defaultValue;
+        // return HasInitialized() ? GetConfig(key).StringValue : defaultValue;
     }
 
     static ConfigValue GetConfig(string key)
@@ -222,7 +278,7 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
         else onFetchComplete += callback;
     }
 
-    static FirebaseRemoteConfig GetFirebaseInstance()
+    public static FirebaseRemoteConfig GetFirebaseInstance()
     {
         return FirebaseRemoteConfig.DefaultInstance;
     }

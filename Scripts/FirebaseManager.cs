@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using Firebase.Analytics;
 using Firebase.Crashlytics;
@@ -12,7 +13,23 @@ using System.Text.RegularExpressions;
  * */
 public class FirebaseManager : MonoBehaviour
 {
-    public static FirebaseManager instance { get; protected set; }
+    public static FirebaseManager instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                var prefab = Resources.Load<FirebaseManager>("FirebaseManager");
+                if (prefab != null) _instance = Instantiate(prefab);
+                else { Debug.LogWarning("FirebaseManager not found in Resources. Please import Firebase Manager's extra files."); }
+            }
+
+            return _instance;
+        }
+    }
+
+    private static FirebaseManager _instance;
+
     public static Firebase.FirebaseApp app;
 
     static bool? firebaseReady;
@@ -27,13 +44,13 @@ public class FirebaseManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance != null)
+        if (_instance != null)
         {
             Destroy(gameObject);
         }
         else
         {
-            instance = this;
+            _instance = this;
             DontDestroyOnLoad(this.gameObject);
 
             CheckGooglePlayService();

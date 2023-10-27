@@ -1,6 +1,9 @@
 {
     "name": "Omnilatent.Firebase",
-    "references": [],
+    "rootNamespace": "",
+    "references": [
+        "LitJSON"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
