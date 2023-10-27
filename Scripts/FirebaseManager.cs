@@ -176,7 +176,8 @@ public class FirebaseManager : MonoBehaviour
         FirebaseAnalytics.LogEvent(name);
 #endif
     }
-    public static void LogEvent(string name, Firebase.Analytics.Parameter[] array)
+    
+    public static void LogEvent(string name, params Firebase.Analytics.Parameter[] array)
     {
         CheckEventNameValid(name);
         if (!FirebaseManager.CheckInit())
@@ -185,7 +186,7 @@ public class FirebaseManager : MonoBehaviour
             return;
         }
 #if DEBUG_EVENT
-        FirebaseAnalytics.LogEvent(DebugPrefix + name, array);
+            FirebaseAnalytics.LogEvent(DebugPrefix + name, array);
 #else
         FirebaseAnalytics.LogEvent(name, array);
 #endif
