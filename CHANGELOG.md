@@ -1,4 +1,11 @@
 CHANGELOG:
+
+# 1.3.1
+Changes:
+- Clean up code. 
+- Log installation id to console.
+- Remove unnecessary conditional scripting define symbol in FirebaseRemoteConfigHelper.
+
 # 1.3.0
 News:
 - Scripting define symbol "OMNILATENT_FIREBASE_MANAGER" will automatically be added to project.
