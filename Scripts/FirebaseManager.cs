@@ -151,7 +151,7 @@ public class FirebaseManager : MonoBehaviour
 
     public static void LogEvent(string name, string paramName, string value)
     {
-        CheckEventNameValid(name);
+        CheckEventNameValid(name, paramName, value);
         LogConsole(name, paramName, value);
         if (!FirebaseManager.CheckInit())
         {
@@ -210,7 +210,7 @@ public class FirebaseManager : MonoBehaviour
         else handleOnReady += callback;
     }
 
-    static bool CheckEventNameValid(string eventName, string paramName = "")
+    static bool CheckEventNameValid(string eventName, string paramName = null, string value = null)
     {
         bool isDebugging = Debug.isDebugBuild;
         bool isValid = true;
@@ -220,12 +220,20 @@ public class FirebaseManager : MonoBehaviour
         if (isDebugging)
         {
             string regexPattern = @"^[a-zA-Z]\w+$";
-            if (eventName.Length > 40 || paramName.Length > 40)
+            if (eventName.Length > 40 || (!string.IsNullOrEmpty(paramName) && paramName.Length > 40))
             {
-                var e = new System.ArgumentException($"Event '{eventName}' with param '{paramName}' exceeds 40 characters");
+                var e = new System.ArgumentException($"Event '{eventName}', '{paramName}' name exceeds 40 characters");
                 FirebaseManager.LogException(e, true);
                 isValid = false;
             }
+
+            if (!string.IsNullOrEmpty(value) && value.Length > 100)
+            {
+                var e = new System.ArgumentException($"Event '{eventName}', '{paramName}', param value '{value}' exceeds 100 characters");
+                FirebaseManager.LogException(e, true);
+                isValid = false;
+            }
+            
             if (!Regex.Match(eventName, regexPattern).Success || (!string.IsNullOrEmpty(paramName) && !Regex.Match(paramName, regexPattern).Success))
             {
                 var e = new System.ArgumentException($"Event '{eventName}' with param '{paramName}' contains invalid characters");
