@@ -41,9 +41,11 @@ public class FirebaseManager : MonoBehaviour
 
     public static System.EventHandler<bool> handleOnReady;
     const string DebugPrefix = "Debug_";
+    private static bool isDebugBuild = false;
 
     private void Awake()
     {
+        isDebugBuild = Debug.isDebugBuild;
         if (_instance != null)
         {
             Destroy(gameObject);
@@ -212,7 +214,7 @@ public class FirebaseManager : MonoBehaviour
 
     static bool CheckEventNameValid(string eventName, string paramName = null, string value = null)
     {
-        bool isDebugging = Debug.isDebugBuild;
+        bool isDebugging = isDebugBuild;
         bool isValid = true;
 #if UNITY_EDITOR
         isDebugging = true;
