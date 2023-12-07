@@ -13,6 +13,12 @@ using System.Text.RegularExpressions;
  * */
 public class FirebaseManager : MonoBehaviour
 {
+    [Tooltip("If true, log event will also log to console when play in Editor")]
+    [SerializeField] private bool logConsoleEditor = true;
+    
+    [Tooltip("If true, log event will also log to console when play in Player (Debug build)")]
+    [SerializeField] private bool logConsolePlayerDebug = false; 
+
     public static FirebaseManager instance
     {
         get
@@ -248,8 +254,20 @@ public class FirebaseManager : MonoBehaviour
 
     static void LogConsole(string name, string paramName = "", object value = null)
     {
-#if UNITY_EDITOR
-        Debug.Log($"<color=yellow>firebase log:</color> {name}, {paramName}, {value}");
-#endif
+        if (!isDebugBuild)
+        {
+            return;
+        }
+        
+        bool doLog = false;
+        #if UNITY_EDITOR
+        doLog = instance.logConsoleEditor;
+        #else
+        doLog = instance.logConsolePlayerDebug;
+        #endif
+        if(doLog)
+        {
+            Debug.Log($"<color=yellow>firebase log:</color> {name}, {paramName}, {value}");
+        }
     }
 }
