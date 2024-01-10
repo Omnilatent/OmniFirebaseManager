@@ -24,14 +24,31 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
     [Tooltip("If true, store config data to PlayerPref on fetch success")]
     [SerializeField] CacheSetting _cacheConfig = CacheSetting.No;
 
-    public static FirebaseRemoteConfigHelper instance;
+    private static FirebaseRemoteConfigHelper _instance;
+
+    public static FirebaseRemoteConfigHelper instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                Debug.LogWarning("No FirebaseRemoteConfigHelper instance found, new instance will be created.");
+                GameObject obj = new GameObject("FirebaseRemoteConfigHelper Temp");
+                _instance = obj.AddComponent<FirebaseRemoteConfigHelper>();
+            }
+
+            return _instance;
+        }
+    }
+    
+    
     private void Awake()
     {
-        if (instance == null)
+        if (_instance == null)
         {
-            instance = this;
+            _instance = this;
         }
-        else if (instance != this)
+        else if (_instance != this)
         {
             Destroy(gameObject);
         }
