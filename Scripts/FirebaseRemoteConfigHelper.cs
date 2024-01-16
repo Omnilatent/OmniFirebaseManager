@@ -226,8 +226,12 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
                 else
                 {
                     Debug.Log("Fetch async failed. Either because Firebase fetch failed or an exception was thrown in callbacks");
-                    initSuccess = false;
-                    onFetchComplete?.Invoke(null, false);
+                    if (initSuccess.HasValue == false) //only assign status of initSuccess if initSuccess has not been set
+                    {
+                        initSuccess = false;
+                    }
+
+                    onFetchComplete?.Invoke(null, false); //TODO: onFetchComplete could still be called multiple times if exception happens during callback, need to fix this
                 }
             });
         }
