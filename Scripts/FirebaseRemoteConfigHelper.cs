@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using System;
+using Omnilatent.FirebaseManagerNS;
 
 #if !DISABLE_FIREBASE
 using Firebase.RemoteConfig;
@@ -14,14 +15,40 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
     public static System.EventHandler<bool> onFetchComplete;
     string firebaseInstanceId;
 
-    public static FirebaseRemoteConfigHelper instance;
+    public enum CacheSetting
+    {
+        No = 0,
+        Yes = 1
+    }
+
+    [Tooltip("If true, store config data to PlayerPref on fetch success")]
+    [SerializeField] CacheSetting _cacheConfig = CacheSetting.No;
+
+    private static FirebaseRemoteConfigHelper _instance;
+
+    public static FirebaseRemoteConfigHelper instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                Debug.LogWarning("No FirebaseRemoteConfigHelper instance found, new instance will be created.");
+                GameObject obj = new GameObject("FirebaseRemoteConfigHelper Temp");
+                _instance = obj.AddComponent<FirebaseRemoteConfigHelper>();
+            }
+
+            return _instance;
+        }
+    }
+    
+    
     private void Awake()
     {
-        if (instance == null)
+        if (_instance == null)
         {
-            instance = this;
+            _instance = this;
         }
-        else if (instance != this)
+        else if (_instance != this)
         {
             Destroy(gameObject);
         }
@@ -76,35 +103,81 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
             setting.MinimumFetchInternalInMilliseconds = 2000;
         }
 
+        if (_cacheConfig == CacheSetting.Yes)
+        {
+            onFetchComplete += CacheRemoteConfig.OnFetchRemoteConfig;
+        }
         FetchData();
     }
 
     public static int GetInt(string key, int defaultValue = 0)
     {
+        if (HasInitialized())
+        {
+            return (int)GetConfig(key).LongValue;
+        }
+        else if (instance._cacheConfig == CacheSetting.Yes)
+        {
+            var cacheConfigValue = CacheRemoteConfig.GetConfig(key);
+            if (cacheConfigValue != null) return (int)cacheConfigValue.LongValue();
+        }
+        return defaultValue;
+        
         //FetchData();
         //if (!HasInitialized()) Debug.Log("Firebase Remote: init not success");
-        ConfigValue config = GetConfig(key);
+        /*ConfigValue config = GetConfig(key);
         if (HasInitialized() && !string.IsNullOrEmpty(config.StringValue))
             return (int)config.DoubleValue;
-        else return defaultValue;
+        else return defaultValue;*/
     }
 
     public static float GetFloat(string key, float defaultValue = 0)
     {
-        ConfigValue config = GetConfig(key);
+        if (HasInitialized())
+        {
+            return (float)GetConfig(key).DoubleValue;
+        }
+        else if (instance._cacheConfig == CacheSetting.Yes)
+        {
+            var cacheConfigValue = CacheRemoteConfig.GetConfig(key);
+            if (cacheConfigValue != null) return (float)cacheConfigValue.DoubleValue();
+        }
+        return defaultValue;
+        
+        /*ConfigValue config = GetConfig(key);
         if (HasInitialized() && !string.IsNullOrEmpty(config.StringValue))
             return (float)config.DoubleValue;
-        else return defaultValue;
+        else return defaultValue;*/
     }
 
     public static bool GetBool(string key, bool defaultValue)
     {
-        return HasInitialized() ? GetConfig(key).BooleanValue : defaultValue;
+        if (HasInitialized())
+        {
+            return GetConfig(key).BooleanValue;
+        }
+        else if (instance._cacheConfig == CacheSetting.Yes)
+        {
+            var cacheConfigValue = CacheRemoteConfig.GetConfig(key);
+            if (cacheConfigValue != null) return cacheConfigValue.BooleanValue();
+        }
+        return defaultValue;
+        // return HasInitialized() ? GetConfig(key).BooleanValue : defaultValue;
     }
 
     public static string GetString(string key, string defaultValue)
     {
-        return HasInitialized() ? GetConfig(key).StringValue : defaultValue;
+        if (HasInitialized())
+        {
+            return GetConfig(key).StringValue;
+        }
+        else if (instance._cacheConfig == CacheSetting.Yes)
+        {
+            var cacheConfigValue = CacheRemoteConfig.GetConfig(key);
+            if (cacheConfigValue != null) return cacheConfigValue.StringValue();
+        }
+        return defaultValue;
+        // return HasInitialized() ? GetConfig(key).StringValue : defaultValue;
     }
 
     static ConfigValue GetConfig(string key)
@@ -153,8 +226,12 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
                 else
                 {
                     Debug.Log("Fetch async failed. Either because Firebase fetch failed or an exception was thrown in callbacks");
-                    initSuccess = false;
-                    onFetchComplete?.Invoke(null, false);
+                    if (initSuccess.HasValue == false) //only assign status of initSuccess if initSuccess has not been set
+                    {
+                        initSuccess = false;
+                    }
+
+                    onFetchComplete?.Invoke(null, false); //TODO: onFetchComplete could still be called multiple times if exception happens during callback, need to fix this
                 }
             });
         }
@@ -222,7 +299,7 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
         else onFetchComplete += callback;
     }
 
-    static FirebaseRemoteConfig GetFirebaseInstance()
+    public static FirebaseRemoteConfig GetFirebaseInstance()
     {
         return FirebaseRemoteConfig.DefaultInstance;
     }

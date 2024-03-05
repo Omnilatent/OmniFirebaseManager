@@ -1,5 +1,29 @@
 CHANGELOG:
 
+# 1.4.1
+
+News:
+- Add toggle log console to serialize field of Firebase Manager component.
+- Add check parameter value length if it exceeds 100 characters.
+
+Fixes:
+- Use static is debug build so Log event doesn't require to be called from main thread.
+- Only assign status of initSuccess if initSuccess has not been set to fix issue with initSuccess being set incorrectly when an exception happens during callback.
+
+Changes:
+- Change Firebase remote config helper's instance to property. An instance will be created on demand to allow testing from any scene.
+- Add params modifier to LogEvent's array parameter to allow convenient usage.
+
+# 1.4.0
+
+Dependency changed: LitJson (new).
+
+New features:
+- Cache remote config data as JSON to PlayerPref.
+- Add default config as scriptable object.
+- Make new extra package that include Firebase manager prefab, Default config files, Firebase cloud messaging helper.
+- Accessing Firebase manager instance will automatically instantiate an instance using Resouces.Load.
+
 # 1.3.1
 Changes:
 - Clean up code. 

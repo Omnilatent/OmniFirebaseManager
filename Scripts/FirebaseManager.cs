@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using Firebase.Analytics;
 using Firebase.Crashlytics;
@@ -12,7 +13,29 @@ using System.Text.RegularExpressions;
  * */
 public class FirebaseManager : MonoBehaviour
 {
-    public static FirebaseManager instance { get; protected set; }
+    [Tooltip("If true, log event will also log to console when play in Editor")]
+    [SerializeField] private bool logConsoleEditor = true;
+    
+    [Tooltip("If true, log event will also log to console when play in Player (Debug build)")]
+    [SerializeField] private bool logConsolePlayerDebug = false; 
+
+    public static FirebaseManager instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                var prefab = Resources.Load<FirebaseManager>("FirebaseManager");
+                if (prefab != null) _instance = Instantiate(prefab);
+                else { Debug.LogWarning("FirebaseManager not found in Resources. Please import Firebase Manager's extra files."); }
+            }
+
+            return _instance;
+        }
+    }
+
+    private static FirebaseManager _instance;
+
     public static Firebase.FirebaseApp app;
 
     static bool? firebaseReady;
@@ -24,16 +47,18 @@ public class FirebaseManager : MonoBehaviour
 
     public static System.EventHandler<bool> handleOnReady;
     const string DebugPrefix = "Debug_";
+    private static bool isDebugBuild = false;
 
     private void Awake()
     {
-        if (instance != null)
+        isDebugBuild = Debug.isDebugBuild;
+        if (_instance != null)
         {
             Destroy(gameObject);
         }
         else
         {
-            instance = this;
+            _instance = this;
             DontDestroyOnLoad(this.gameObject);
 
             CheckGooglePlayService();
@@ -134,7 +159,7 @@ public class FirebaseManager : MonoBehaviour
 
     public static void LogEvent(string name, string paramName, string value)
     {
-        CheckEventNameValid(name);
+        CheckEventNameValid(name, paramName, value);
         LogConsole(name, paramName, value);
         if (!FirebaseManager.CheckInit())
         {
@@ -159,7 +184,8 @@ public class FirebaseManager : MonoBehaviour
         FirebaseAnalytics.LogEvent(name);
 #endif
     }
-    public static void LogEvent(string name, Firebase.Analytics.Parameter[] array)
+    
+    public static void LogEvent(string name, params Firebase.Analytics.Parameter[] array)
     {
         CheckEventNameValid(name);
         if (!FirebaseManager.CheckInit())
@@ -168,7 +194,7 @@ public class FirebaseManager : MonoBehaviour
             return;
         }
 #if DEBUG_EVENT
-        FirebaseAnalytics.LogEvent(DebugPrefix + name, array);
+            FirebaseAnalytics.LogEvent(DebugPrefix + name, array);
 #else
         FirebaseAnalytics.LogEvent(name, array);
 #endif
@@ -192,9 +218,9 @@ public class FirebaseManager : MonoBehaviour
         else handleOnReady += callback;
     }
 
-    static bool CheckEventNameValid(string eventName, string paramName = "")
+    static bool CheckEventNameValid(string eventName, string paramName = null, string value = null)
     {
-        bool isDebugging = Debug.isDebugBuild;
+        bool isDebugging = isDebugBuild;
         bool isValid = true;
 #if UNITY_EDITOR
         isDebugging = true;
@@ -202,12 +228,20 @@ public class FirebaseManager : MonoBehaviour
         if (isDebugging)
         {
             string regexPattern = @"^[a-zA-Z]\w+$";
-            if (eventName.Length > 40 || paramName.Length > 40)
+            if (eventName.Length > 40 || (!string.IsNullOrEmpty(paramName) && paramName.Length > 40))
             {
-                var e = new System.ArgumentException($"Event '{eventName}' with param '{paramName}' exceeds 40 characters");
+                var e = new System.ArgumentException($"Event '{eventName}', '{paramName}' name exceeds 40 characters");
                 FirebaseManager.LogException(e, true);
                 isValid = false;
             }
+
+            if (!string.IsNullOrEmpty(value) && value.Length > 100)
+            {
+                var e = new System.ArgumentException($"Event '{eventName}', '{paramName}', param value '{value}' exceeds 100 characters");
+                FirebaseManager.LogException(e, true);
+                isValid = false;
+            }
+            
             if (!Regex.Match(eventName, regexPattern).Success || (!string.IsNullOrEmpty(paramName) && !Regex.Match(paramName, regexPattern).Success))
             {
                 var e = new System.ArgumentException($"Event '{eventName}' with param '{paramName}' contains invalid characters");
@@ -220,8 +254,20 @@ public class FirebaseManager : MonoBehaviour
 
     static void LogConsole(string name, string paramName = "", object value = null)
     {
-#if UNITY_EDITOR
-        Debug.Log($"<color=yellow>firebase log:</color> {name}, {paramName}, {value}");
-#endif
+        if (!isDebugBuild)
+        {
+            return;
+        }
+        
+        bool doLog = false;
+        #if UNITY_EDITOR
+        doLog = instance.logConsoleEditor;
+        #else
+        doLog = instance.logConsolePlayerDebug;
+        #endif
+        if(doLog)
+        {
+            Debug.Log($"<color=yellow>firebase log:</color> {name}, {paramName}, {value}");
+        }
     }
 }
