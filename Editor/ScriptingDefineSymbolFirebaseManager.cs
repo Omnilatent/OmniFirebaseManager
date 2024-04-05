@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 
 #if !OMNILATENT_FIREBASE_MANAGER
-namespace Omnilatent.Firebase.Editor
+namespace Omnilatent.FirebaseNS.Editor
 {
     public static class ScriptingDefineSymbolAdsManager
     {
