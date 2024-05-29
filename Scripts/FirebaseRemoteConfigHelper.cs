@@ -100,7 +100,7 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
         if (Debug.isDebugBuild)
         {
             var setting = FirebaseRemoteConfig.DefaultInstance.ConfigSettings;
-            setting.MinimumFetchInternalInMilliseconds = 2000;
+            setting.MinimumFetchIntervalInMilliseconds = 2000;
         }
 
         if (_cacheConfig == CacheSetting.Yes)
