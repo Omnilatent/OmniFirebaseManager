@@ -114,7 +114,16 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
     {
         if (HasInitialized())
         {
-            return (int)GetConfig(key).LongValue;
+            try
+            {
+                return (int)GetConfig(key).LongValue;
+            }
+            catch
+            {
+                Debug.LogError("Cant Get Remote Config Value, Return Default Value");
+                return defaultValue;
+            }
+           
         }
         else if (instance._cacheConfig == CacheSetting.Yes)
         {
