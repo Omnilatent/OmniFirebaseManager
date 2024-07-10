@@ -120,7 +120,7 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
             }
             catch
             {
-                Debug.LogError("Cant Get Remote Config Value, Return Default Value");
+                Debug.LogError("Cant Get Remote Config Value For Key: "+key +" Return Default Value");
                 return defaultValue;
             }
            
