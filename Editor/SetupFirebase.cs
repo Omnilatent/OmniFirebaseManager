@@ -4,7 +4,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace Omnilatent.Firebase.Editor
+namespace Omnilatent.FirebaseNS.Editor
 {
     public class SetupFirebase
     {

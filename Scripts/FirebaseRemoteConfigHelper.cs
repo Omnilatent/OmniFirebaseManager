@@ -100,7 +100,7 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
         if (Debug.isDebugBuild)
         {
             var setting = FirebaseRemoteConfig.DefaultInstance.ConfigSettings;
-            setting.MinimumFetchInternalInMilliseconds = 2000;
+            setting.MinimumFetchIntervalInMilliseconds = 2000;
         }
 
         if (_cacheConfig == CacheSetting.Yes)
@@ -114,7 +114,16 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
     {
         if (HasInitialized())
         {
-            return (int)GetConfig(key).LongValue;
+            try
+            {
+                return (int)GetConfig(key).LongValue;
+            }
+            catch
+            {
+                Debug.LogError("Cant Get Remote Config Value For Key: "+key +" Return Default Value");
+                return defaultValue;
+            }
+           
         }
         else if (instance._cacheConfig == CacheSetting.Yes)
         {

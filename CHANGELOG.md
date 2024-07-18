@@ -1,5 +1,14 @@
 CHANGELOG:
 
+# 1.5.0
+Dependency change: Firebase SDK 12.0.0
+- Change `setting.MinimumFetchInternalInMilliseconds` to `setting.MinimumFetchIntervalInMilliseconds` to support Firebase 12.0.0.
+- Add try catch to `int GetInt(string key, int defaultValue = 0)`.
+
+# 1.4.2
+Fix:
+- Editor files: Rename namespace Firebase to FirebaseNS
+
 # 1.4.1
 
 News:
