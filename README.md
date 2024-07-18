@@ -1,10 +1,10 @@
 ## Dependencies
 
-- Firebase Analytic 9.1.0+
-- Firebase Remote Config 9.1.0+
-- Firebase Messaging 9.1.0+ (if you use Cloud Message)
-- Firebase Installation 9.1.0+
-- Firebase Crashlytic 9.1.0+
+- Firebase Analytic 12.0.0+.
+- Firebase Remote Config.
+- Firebase Messaging (if you use Cloud Message).
+- Firebase Installation.
+- Firebase Crashlytic.
 
 ## SETUP:
 
