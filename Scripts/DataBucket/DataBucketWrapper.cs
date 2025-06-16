@@ -50,7 +50,7 @@ namespace JacatGames.Tracking
 
             if (Value is null)
             {
-                return new Parameter(Key, null);
+                return new Parameter(Key, (string)null);
             }
 
             // Optionally, handle unsupported types
