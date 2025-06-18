@@ -60,6 +60,23 @@ namespace JacatGames.Tracking
 
         private void Awake()
         {
+            if (_instance == null)
+            {
+                _instance = this;
+            }
+
+            FirebaseManager.CheckWaitForReady(OnFirebaseInitialized);
+        }
+
+        private void OnFirebaseInitialized(object sender, bool success)
+        {
+            if (!success) { return; }
+
+            Initialize();
+        }
+
+        void Initialize()
+        {
             _httpClient = new HttpClient();
             _apiKey = GetSettingsApiKey();
             _httpClient.DefaultRequestHeaders.Add("X-API-KEY", _apiKey);
@@ -98,7 +115,7 @@ namespace JacatGames.Tracking
                 _eventProperties["device_id"] = SystemInfo.deviceUniqueIdentifier;
             }
         }
-
+        
         private void OnDestroy()
         {
             _httpClient.Dispose();
