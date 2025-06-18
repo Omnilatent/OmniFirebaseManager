@@ -37,12 +37,12 @@ namespace Omnilatent.FirebaseManagerNS
 
             if (data.configData.Count == 0)
             {
-                DefaultConfigValue defaultConfigValue = Resources.Load<DefaultConfigValue>("DefaultConfigValue");
-                if (defaultConfigValue != null)
+                FirebaseManagerConfig firebaseManagerConfig = FirebaseManagerConfig.Instance;
+                if (firebaseManagerConfig != null)
                 {
-                    for (int i = 0; i < defaultConfigValue.configValues.Count; i++)
+                    for (int i = 0; i < firebaseManagerConfig.configValues.Count; i++)
                     {
-                        data.configData.Add(defaultConfigValue.configValues[i].Key, defaultConfigValue.configValues[i]);
+                        data.configData.Add(firebaseManagerConfig.configValues[i].Key, firebaseManagerConfig.configValues[i]);
                     }
                 }
             }
