@@ -13,6 +13,7 @@ namespace Omnilatent.FirebaseNS.Editor
         private const string PackageName = "Firebase Manager";
         private const string SYMBOL = "OMNILATENT_FIREBASE_MANAGER";
         private const string DATABUCKET_SYMBOL = "JACAT_DATABUCKET";
+        private const string DATABUCKET_REALTIME_SYMBOL = "DATABUCKET_REALTIME";
 
         #if !OMNILATENT_FIREBASE_MANAGER
         [UnityEditor.Callbacks.DidReloadScripts]
@@ -72,10 +73,27 @@ namespace Omnilatent.FirebaseNS.Editor
             dataBucketButton.style.height = 80;
             dataBucketButton.style.marginTop = new StyleLength(StyleKeyword.Auto);
             dataBucketButton.style.marginBottom = 10;
-            dataBucketButton.name = "databucket button";
             dataBucketButton.text = $"Import DataBucket";
             dataBucketButton.clicked += InitDataBucketScriptingDefineSymbol;
             root.Add(dataBucketButton);
+
+            Button dataBucketRealTimeButton = new Button();
+            dataBucketRealTimeButton.style.height = 80;
+            dataBucketRealTimeButton.style.marginTop = new StyleLength(StyleKeyword.Auto);
+            dataBucketRealTimeButton.style.marginBottom = 10;
+
+            bool symbolExists = ScriptingDefineUtility.HasSymbol(DATABUCKET_REALTIME_SYMBOL);
+            dataBucketRealTimeButton.text = symbolExists ? "Disable DataBucket Real Time Logging" : "Enable DataBucket Real Time Logging";
+
+            dataBucketRealTimeButton.clicked += () =>
+            {
+                ScriptingDefineUtility.ToggleSymbol(DATABUCKET_REALTIME_SYMBOL);
+                dataBucketRealTimeButton.text = ScriptingDefineUtility.HasSymbol(DATABUCKET_REALTIME_SYMBOL)
+                    ? "Disable DataBucket Real Time Logging"
+                    : "Enable DataBucket Real Time Logging";
+            };
+
+            root.Add(dataBucketRealTimeButton);
         }
 
         private void InstallFiles()
@@ -95,6 +113,36 @@ namespace Omnilatent.FirebaseNS.Editor
                 Debug.Log($"Scripting Define Symbol '{DATABUCKET_SYMBOL}' was added.");
             }
             #endif
+        }
+    }
+    
+    public static class ScriptingDefineUtility
+    {
+        public static bool HasSymbol(string symbol)
+        {
+            string defineSymbolString = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
+            List<string> symbols = defineSymbolString.Split(';').ToList();
+            return symbols.Contains(symbol);
+        }
+
+        public static void ToggleSymbol(string symbol)
+        {
+            BuildTargetGroup group = EditorUserBuildSettings.selectedBuildTargetGroup;
+            string defineSymbolString = PlayerSettings.GetScriptingDefineSymbolsForGroup(group);
+            List<string> symbols = defineSymbolString.Split(';').ToList();
+
+            if (symbols.Contains(symbol))
+            {
+                symbols.Remove(symbol);
+                Debug.Log($"Scripting Define Symbol '{symbol}' was removed.");
+            }
+            else
+            {
+                symbols.Add(symbol);
+                Debug.Log($"Scripting Define Symbol '{symbol}' was added.");
+            }
+
+            PlayerSettings.SetScriptingDefineSymbolsForGroup(group, string.Join(";", symbols));
         }
     }
 }
