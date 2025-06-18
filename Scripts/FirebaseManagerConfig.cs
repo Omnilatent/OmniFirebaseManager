@@ -10,7 +10,16 @@ namespace Omnilatent.FirebaseManagerNS
     [CreateAssetMenu(fileName = "DefaultRemoteConfigValue", menuName = "Omnilatent/Default Firebase remote config value", order = 10)]
     public class FirebaseManagerConfig : ScriptableObject
     {
+        [Tooltip("Cached Remote Config default values")]
+        public List<CacheConfigValue> configValues = new List<CacheConfigValue>();
+
+        [Tooltip("First scene's name. Used by Test script to test initialization")]
+        public string MainSceneName = "Main";
+
         private static FirebaseManagerConfig _instance;
+        private const string _assetName = "FirebaseManagerConfig";
+        private const string _assetNameLegacy = "DefaultRemoteConfigValue";
+        const string _assetFolder = "Assets/Omnilatent/Extra/FirebaseManager Extra/Resources";
 
         /// <summary>
         /// Singleton‑style access to the default remote‑config table.
@@ -25,39 +34,74 @@ namespace Omnilatent.FirebaseManagerNS
             {
                 if (_instance == null)
                 {
-                    // Attempt to load from Resources.
-                    _instance = Resources.Load<FirebaseManagerConfig>("FirebaseManagerConfig");
-
-#if UNITY_EDITOR
-                    // If not found, create a new asset inside the Resources folder (Editor‑only).
-                    if (_instance == null)
-                    {
-                        const string assetPath = "Assets/Omnilatent/Extra/FirebaseManager Extra/Resources/FirebaseManagerConfig.asset";
-
-                        // Ensure the Resources directory exists.
-                        string directory = Path.GetDirectoryName(assetPath);
-                        if (!Directory.Exists(directory))
-                        {
-                            Directory.CreateDirectory(directory);
-                        }
-
-                        _instance = CreateInstance<FirebaseManagerConfig>();
-                        AssetDatabase.CreateAsset(_instance, assetPath);
-                        AssetDatabase.SaveAssets();
-                        AssetDatabase.Refresh();
-                        Debug.Log("Generated default FirebaseManagerConfig asset at " + assetPath);
-                    }
-#endif
+                    _instance = EnsureInstance();
                 }
 
                 return _instance;
             }
         }
 
-        [Tooltip("Cached Remote Config default values")]
-        public List<CacheConfigValue> configValues = new List<CacheConfigValue>();
-        
-        [Tooltip("First scene's name. Used by Test script to test initialization")]
-        public string MainSceneName = "Main";
+        /// <summary>
+        /// Ensure that a valid asset exists in Resources and migrate data from any legacy asset if needed.
+        /// </summary>
+        private static FirebaseManagerConfig EnsureInstance()
+        {
+            // 1. Strong‑typed load first
+            var asset = Resources.Load<FirebaseManagerConfig>(_assetName);
+            if (asset != null)
+                return asset;
+
+            #if UNITY_EDITOR
+            // 2. Look for any ScriptableObject with the legacy name for migration
+            var legacyAsset = Resources.Load<FirebaseManagerConfig>(_assetNameLegacy);
+
+            // 3. Create new asset
+            var newAsset = CreateInstance<FirebaseManagerConfig>();
+
+            if (legacyAsset != null && legacyAsset != newAsset)
+            {
+                MigrateLegacyValues(legacyAsset, newAsset);
+                Debug.Log($"[FirebaseManagerConfig] Migrated values from legacy asset {_assetNameLegacy}.");
+            }
+
+            // 4. Save into Assets/Resources so runtime can load it next time
+            var resourcesDir = _assetFolder;
+            EnsureFolderExists(resourcesDir);
+
+            var assetPath = Path.Combine(resourcesDir, _assetName + ".asset");
+            AssetDatabase.CreateAsset(newAsset, assetPath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            return newAsset;
+            #else
+            Debug.LogError("[FirebaseManagerConfig] Asset not found in Resources and cannot be created at runtime.");
+            return null;
+            #endif
+        }
+
+        /// <summary>
+        /// Copy matching public fields and properties from a legacy asset to the new asset.
+        /// </summary>
+        private static void MigrateLegacyValues(FirebaseManagerConfig source, FirebaseManagerConfig destination)
+        {
+            destination.configValues = new(source.configValues);
+        }
+
+        #if UNITY_EDITOR
+        private static void EnsureFolderExists(string folderPath)
+        {
+            if (AssetDatabase.IsValidFolder(folderPath)) return;
+
+            string[] parts = folderPath.Split('/');
+            string current = parts[0];
+            for (int i = 1; i < parts.Length; i++)
+            {
+                string next = $"{current}/{parts[i]}";
+                if (!AssetDatabase.IsValidFolder(next))
+                    AssetDatabase.CreateFolder(current, parts[i]);
+                current = next;
+            }
+        }
+        #endif
     }
 }
