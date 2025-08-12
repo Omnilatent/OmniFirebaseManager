@@ -17,7 +17,10 @@ public class FirebaseManager : MonoBehaviour
     [SerializeField] private bool logConsoleEditor = true;
     
     [Tooltip("If true, log event will also log to console when play in Player (Debug build)")]
-    [SerializeField] private bool logConsolePlayerDebug = false; 
+    [SerializeField] private bool logConsolePlayerDebug = false;
+
+    [SerializeField] private string _dataBucketApiKey;
+    public string DataBucketApiKey { get => _dataBucketApiKey; }
 
     public static FirebaseManager instance
     {

@@ -8,14 +8,14 @@ namespace Omnilatent.FirebaseNS.Editor
 {
     public class SetupFirebase
     {
-        [MenuItem("Tools/Omnilatent/Firebase/Import Extra files")]
+        // [MenuItem("Tools/Omnilatent/Firebase/Import Extra files")]
         public static void ImportCloudMessagingHelper()
         {
             string path = GetPackagePath("Assets/Omnilatent/FirebaseManager/FirebaseManagerExtra.unitypackage", "FirebaseManagerExtra");
             AssetDatabase.ImportPackage(path, true);
         }
 
-        static string GetPackagePath(string path, string filename)
+        public static string GetPackagePath(string path, string filename)
         {
             if (!File.Exists($"{Application.dataPath}/../{path}"))
             {

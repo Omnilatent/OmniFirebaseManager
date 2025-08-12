@@ -32,6 +32,9 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
         {
             if (_instance == null)
             {
+                #if UNITY_EDITOR
+                if (!Application.isPlaying) { return null; }
+                #endif
                 Debug.LogWarning("No FirebaseRemoteConfigHelper instance found, new instance will be created.");
                 GameObject obj = new GameObject("FirebaseRemoteConfigHelper Temp");
                 _instance = obj.AddComponent<FirebaseRemoteConfigHelper>();

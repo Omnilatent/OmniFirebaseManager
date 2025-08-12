@@ -4,15 +4,15 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-#if !OMNILATENT_FIREBASE_MANAGER
+
 namespace Omnilatent.FirebaseNS.Editor
 {
     public static class ScriptingDefineSymbolAdsManager
     {
         const string SYMBOL = "OMNILATENT_FIREBASE_MANAGER";
 
-        [InitializeOnLoadMethod]
-        private static void Init()
+        // [InitializeOnLoadMethod]
+        public static void Init()
         {
             // Get current defines
             string defineSymbolString = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
@@ -33,4 +33,3 @@ namespace Omnilatent.FirebaseNS.Editor
         }
     }
 }
-#endif
