@@ -51,6 +51,7 @@ public class FirebaseManager : MonoBehaviour
     public static System.EventHandler<bool> handleOnReady;
     const string DebugPrefix = "Debug_";
     private static bool isDebugBuild = false;
+    private static bool enableLogToFirebase; //for disable logging event to firebase
 
     private void Awake()
     {
@@ -132,9 +133,8 @@ public class FirebaseManager : MonoBehaviour
 
     public static void LogScreenView(string screenName, string screenClass = "Main")
     {
-        if (!FirebaseManager.CheckInit())
+        if (!FirebaseManager.CanLogEvent())
         {
-            print("Firebase not ready");
             return;
         }
         FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventScreenView,
@@ -148,7 +148,7 @@ public class FirebaseManager : MonoBehaviour
     {
         CheckEventNameValid(name, paramName);
         LogConsole(name, paramName, value);
-        if (!FirebaseManager.CheckInit()) return;
+        if (!FirebaseManager.CanLogEvent()) return;
         FirebaseAnalytics.LogEvent(name, paramName, value);
     }
 
@@ -156,7 +156,7 @@ public class FirebaseManager : MonoBehaviour
     {
         CheckEventNameValid(name, paramName);
         LogConsole(name, paramName, value);
-        if (!FirebaseManager.CheckInit()) return;
+        if (!FirebaseManager.CanLogEvent()) return;
         FirebaseAnalytics.LogEvent(name, paramName, value);
     }
 
@@ -164,9 +164,9 @@ public class FirebaseManager : MonoBehaviour
     {
         CheckEventNameValid(name, paramName, value);
         LogConsole(name, paramName, value);
-        if (!FirebaseManager.CheckInit())
+        if (!FirebaseManager.CanLogEvent())
         {
-            print("Firebase not ready");
+            // print("Firebase not ready");
             return;
         }
         FirebaseAnalytics.LogEvent(name, paramName, value);
@@ -176,9 +176,9 @@ public class FirebaseManager : MonoBehaviour
     {
         CheckEventNameValid(name);
         LogConsole(name);
-        if (!FirebaseManager.CheckInit())
+        if (!FirebaseManager.CanLogEvent())
         {
-            print("Firebase not ready");
+            // print("Firebase not ready");
             return;
         }
 #if DEBUG_EVENT
@@ -191,9 +191,9 @@ public class FirebaseManager : MonoBehaviour
     public static void LogEvent(string name, params Firebase.Analytics.Parameter[] array)
     {
         CheckEventNameValid(name);
-        if (!FirebaseManager.CheckInit())
+        if (!FirebaseManager.CanLogEvent())
         {
-            print("Firebase not ready");
+            // print("Firebase not ready");
             return;
         }
 #if DEBUG_EVENT
@@ -205,7 +205,7 @@ public class FirebaseManager : MonoBehaviour
 
     public static void SetUserProperties(string name, string property)
     {
-        if (!FirebaseManager.CheckInit())
+        if (!FirebaseManager.CanLogEvent())
         {
             return;
         }
@@ -272,5 +272,15 @@ public class FirebaseManager : MonoBehaviour
         {
             Debug.Log($"<color=yellow>firebase log:</color> {name}, {paramName}, {value}");
         }
+    }
+
+    private static bool CanLogEvent()
+    {
+        return FirebaseManager.CheckInit() && enableLogToFirebase;
+    }
+
+    public static void SetLogEventEnabled(bool value)
+    {
+        enableLogToFirebase = value;
     }
 }
