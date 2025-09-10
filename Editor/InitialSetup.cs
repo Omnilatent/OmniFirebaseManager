@@ -29,7 +29,7 @@ namespace Omnilatent.FirebaseNS.Editor
             EditorApplication.delayCall += ShowInstallWindow;
         }
         
-        [MenuItem("Tools/Omnilatent/Firebase/Import essential files")]
+        [MenuItem("Tools/Omnilatent/Firebase/Install")]
         public static void ShowInstallWindow()
         {
             if (_instance == null)

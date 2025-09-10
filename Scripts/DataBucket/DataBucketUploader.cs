@@ -140,6 +140,11 @@ namespace JacatGames.Tracking
                 Debug.Log($"Api key is empty, try getting correct API key: {_apiKey}");
             }
 
+            if (string.IsNullOrEmpty(_apiKey))
+            {
+                Debug.LogError($"DataBucket API key is empty. Please set API key in Firebase Manager's setting. Send event failed.");
+            }
+
             long nowMillis = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
             // build base payload
