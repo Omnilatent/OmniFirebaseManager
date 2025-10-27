@@ -51,7 +51,7 @@ public class FirebaseManager : MonoBehaviour
     public static System.EventHandler<bool> handleOnReady;
     const string DebugPrefix = "Debug_";
     private static bool isDebugBuild = false;
-    private static bool enableLogToFirebase; //for disable logging event to firebase
+    private static bool enableLogToFirebase = true; //for disable logging event to firebase
 
     private void Awake()
     {
