@@ -6,6 +6,7 @@ using Firebase.Analytics;
 using Firebase.Crashlytics;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using Omnilatent.FirebaseManagerNS;
 
 /* CHANGELOG:
  * v1.1.0: 5/5: change CheckDependenciesAsync function to async to work with remote config manager
@@ -118,8 +119,15 @@ public class FirebaseManager : MonoBehaviour
                 UnityEngine.Debug.LogError(System.String.Format("Could not resolve all Firebase dependencies: {0}", dependencyStatus));
                 firebaseReady = false;
             }
+            MainThreadDispatcher.ExecuteOnMainThread(InvokeOnReadyEvent);
         });
-        handleOnReady?.Invoke(null, FirebaseReady);
+    }
+
+    static void InvokeOnReadyEvent()
+    {
+        var handler = handleOnReady;
+        handleOnReady = null;
+        handler?.Invoke(null, FirebaseReady);
     }
 
     public static void LogGameEvent(string paramName, string value)
