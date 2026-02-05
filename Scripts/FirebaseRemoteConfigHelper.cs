@@ -54,6 +54,7 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
         else if (_instance != this)
         {
             Destroy(gameObject);
+            return;
         }
         DontDestroyOnLoad(gameObject);
         if (FirebaseManager.FirebaseReady) OnFirebaseReady(this, true);
