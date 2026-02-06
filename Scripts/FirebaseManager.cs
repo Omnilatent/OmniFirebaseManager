@@ -6,6 +6,7 @@ using Firebase.Analytics;
 using Firebase.Crashlytics;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using Firebase.Extensions;
 using Omnilatent.FirebaseManagerNS;
 
 /* CHANGELOG:
@@ -104,9 +105,9 @@ public class FirebaseManager : MonoBehaviour
         CheckDependenciesAsync();
     }
 
-    static async void CheckDependenciesAsync()
+    static async Task CheckDependenciesAsync()
     {
-        await Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(taskCheck =>
+        await Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(taskCheck =>
         {
             var dependencyStatus = taskCheck.Result;
             if (dependencyStatus == Firebase.DependencyStatus.Available)
@@ -119,7 +120,7 @@ public class FirebaseManager : MonoBehaviour
                 UnityEngine.Debug.LogError(System.String.Format("Could not resolve all Firebase dependencies: {0}", dependencyStatus));
                 firebaseReady = false;
             }
-            MainThreadDispatcher.ExecuteOnMainThread(InvokeOnReadyEvent);
+            InvokeOnReadyEvent();
         });
     }
 
