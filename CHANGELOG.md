@@ -1,5 +1,23 @@
 CHANGELOG:
 
+# 1.5.1
+
+### Firebase & Threading Improvements
+* **Main Thread Dependency Check:** Updated `CheckDependencies` to execute properly on the main thread. 0cfa7a1
+* **iOS Firebase Lifecycle Fix:** Fixed an iOS bug preventing Firebase functions from being invoked prior to `CheckDependencies` completion. Implemented via a queued callback to the main thread inside `ContinueWith()` (addressing Firebase Unity SDK issue #1075). 3aa7eee
+* **Remote Config Optimization:** Modified `FirebaseRemoteConfigHelper` to return early if an instance already exists. 0d1d340
+* **Logging Defaults:** Changed `enableLogToFirebase` configuration to be enabled (`true`) by default. 6c29ce6
+
+### Data Bucket Features & Fixes
+* **Race Condition Resolution:** Fixed an initialization race condition where `databucket` would awake before the `firebase manager`. 0764558
+* **Real-Time Logs:** Added a toggle feature for `databucket` real-time logging. 7f1dfae
+* **Setup UI:** Introduced an initial setup window featuring an installation button for `JACAT_DATABUCKET`. 56969f0
+* **Feature Rollout:** Integrated core Data Bucket features. 474c4e0
+
+### General Bug Fixes & Refactoring
+* **UI/Label Fix:** Resolved an issue where extra packages were missing the "Package" label. ffa9b1c
+* **Code Refactoring:** Explicitly defined types for null values to improve type safety. c0fa5a9
+
 # 1.5.0
 Dependency change: Firebase SDK 12.0.0
 - Change `setting.MinimumFetchInternalInMilliseconds` to `setting.MinimumFetchIntervalInMilliseconds` to support Firebase 12.0.0.
