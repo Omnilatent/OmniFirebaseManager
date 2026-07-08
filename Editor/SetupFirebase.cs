@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -12,6 +12,12 @@ namespace Omnilatent.FirebaseNS.Editor
         public static void ImportCloudMessagingHelper()
         {
             string path = GetPackagePath("Assets/Omnilatent/FirebaseManager/FirebaseManagerExtra.unitypackage", "FirebaseManagerExtra");
+            AssetDatabase.ImportPackage(path, true);
+        }
+
+        public static void ImportDummyFirebaseIOS()
+        {
+            string path = GetPackagePath("Assets/Omnilatent/FirebaseManager/DummyFirebaseIOS.unitypackage", "DummyFirebaseIOS");
             AssetDatabase.ImportPackage(path, true);
         }
 

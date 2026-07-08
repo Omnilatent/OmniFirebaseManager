@@ -99,6 +99,31 @@ namespace Omnilatent.FirebaseNS.Editor
         private void InstallFiles()
         {
             SetupFirebase.ImportCloudMessagingHelper();
+            CheckFirebaseAssemblies();
+        }
+
+        private static void CheckFirebaseAssemblies()
+        {
+			#if UNITY_ANDROID
+            // 1. Check if the iOS extension tools are present in the current environment
+            //bool hasIosSupport = System.AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == "UnityEditor.iOS.Extensions.Xcode");
+
+            // 2. Check if Unity successfully loaded the Firebase Editor assembly
+            bool isFirebaseLoaded = System.AppDomain.CurrentDomain.GetAssemblies()
+                .Any(a => a.GetName().Name == "Firebase.Editor");
+
+            // If iOS tools are missing, or Firebase failed to load, execute the fix
+            if (!isFirebaseLoaded)
+            {
+                Debug.LogWarning("[FirebaseManager] Firebase Editor failed to load, possibly due to missing iOS references. Importing dummy assembly to fix.");
+                ExecuteAutoFix();
+            }
+			#endif
+        }
+
+        private static void ExecuteAutoFix()
+        {
+            SetupFirebase.ImportDummyFirebaseIOS();
         }
         
         public static void InitDataBucketScriptingDefineSymbol()
