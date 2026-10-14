@@ -23,6 +23,10 @@ namespace Omnilatent.FirebaseManagerNS
 
         public static void Load()
         {
+#if UNITY_EDITOR
+            // Always touch the config in Editor so the asset is auto-created in Resources and ships with the build
+            _ = FirebaseManagerConfig.Instance;
+#endif
             if (PlayerPrefs.HasKey(PREF_KEY))
             {
                 string raw = PlayerPrefs.GetString(PREF_KEY);
