@@ -1,5 +1,9 @@
 CHANGELOG:
 
+# 1.5.2
+
+* **Crashlytics custom keys before ready:** `SetCustomKey` called before Firebase is ready now waits on `handleOnReady` and is set once Firebase is ready (dropped if Firebase fails), instead of being dropped. Calling Crashlytics that early would initialize it against an unchecked FirebaseApp.
+
 # 1.5.1
 
 ### Firebase & Threading Improvements

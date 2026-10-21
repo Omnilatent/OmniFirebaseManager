@@ -84,12 +84,23 @@ public class FirebaseManager : MonoBehaviour
         return firebaseReady.GetValueOrDefault(false);
     }
 
+    /// <summary>
+    /// Before Firebase is ready the key waits and is set once it is (dropped if Firebase fails): calling Crashlytics
+    /// earlier initializes it against an unchecked FirebaseApp, which can disable it for the whole session.
+    /// </summary>
     public static void SetCustomKey(string key, string value)
     {
-        if (CheckInit())
+        if (!firebaseReady.HasValue) SetCustomKeyOnReady(key, value);
+        else if (firebaseReady.Value) Crashlytics.SetCustomKey(key, value);
+    }
+
+    // Separate method: the closure capturing key and value is only allocated when the call has to wait.
+    static void SetCustomKeyOnReady(string key, string value)
+    {
+        handleOnReady += (_, ready) =>
         {
-            Crashlytics.SetCustomKey(key, value);
-        }
+            if (ready) Crashlytics.SetCustomKey(key, value);
+        };
     }
 
     public static void LogCrashlytics(string message) { if (CheckInit()) Crashlytics.Log(message); }
