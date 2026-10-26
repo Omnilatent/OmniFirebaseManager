@@ -116,6 +116,9 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
 
     public static int GetInt(string key, int defaultValue = 0)
     {
+#if UNITY_EDITOR
+        if (FirebaseManagerConfig.TryGetEditorOverride(key, out var editorValue)) return (int)editorValue.LongValue();
+#endif
         if (HasInitialized())
         {
             try
@@ -146,6 +149,9 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
 
     public static float GetFloat(string key, float defaultValue = 0)
     {
+#if UNITY_EDITOR
+        if (FirebaseManagerConfig.TryGetEditorOverride(key, out var editorValue)) return (float)editorValue.DoubleValue();
+#endif
         if (HasInitialized())
         {
             return (float)GetConfig(key).DoubleValue;
@@ -165,6 +171,9 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
 
     public static bool GetBool(string key, bool defaultValue)
     {
+#if UNITY_EDITOR
+        if (FirebaseManagerConfig.TryGetEditorOverride(key, out var editorValue)) return editorValue.BooleanValue();
+#endif
         if (HasInitialized())
         {
             return GetConfig(key).BooleanValue;
@@ -180,6 +189,9 @@ public class FirebaseRemoteConfigHelper : MonoBehaviour
 
     public static string GetString(string key, string defaultValue)
     {
+#if UNITY_EDITOR
+        if (FirebaseManagerConfig.TryGetEditorOverride(key, out var editorValue)) return editorValue.StringValue();
+#endif
         if (HasInitialized())
         {
             return GetConfig(key).StringValue;

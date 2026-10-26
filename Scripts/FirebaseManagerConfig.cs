@@ -16,6 +16,37 @@ namespace Omnilatent.FirebaseManagerNS
         [Tooltip("First scene's name. Used by Test script to test initialization")]
         public string MainSceneName = "Main";
 
+        [Header("Editor only")]
+        [Tooltip("Apply Editor Overrides in the Editor. Builds never read them.")]
+        public bool editorOverridesEnabled = true;
+
+        [Tooltip("Remote config values forced in the Editor, winning over Firebase and the cache — Firebase conditions " +
+                 "(A/B test variants) never target the Editor, so this is how a variant is tested there. " +
+                 "Value is the raw string: \"true\", \"4\", \"0.5\", JSON…")]
+        public List<CacheConfigValue> editorOverrides = new List<CacheConfigValue>();
+
+        #if UNITY_EDITOR
+        /// <summary>The Editor override for <paramref name="key"/>, if overrides are on and one is set.</summary>
+        public static bool TryGetEditorOverride(string key, out CacheConfigValue value)
+        {
+            value = null;
+            var config = Instance;
+            if (!config.editorOverridesEnabled)
+                return false;
+
+            foreach (var entry in config.editorOverrides)
+            {
+                if (entry.Key == key)
+                {
+                    value = entry;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        #endif
+
         private static FirebaseManagerConfig _instance;
         private const string _assetName = "FirebaseManagerConfig";
         private const string _assetNameLegacy = "DefaultRemoteConfigValue";
